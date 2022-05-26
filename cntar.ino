@@ -2,9 +2,9 @@
 #include <Encoder.h>
 
 #define Row1 A0
-#define Row2 A0
-#define Row3 A1
-#define Row4 A2         
+#define Row2 A1
+#define Row3 A2
+#define Row4 A3         
 
 #define Col1 9
 #define Col2 14
@@ -139,7 +139,7 @@ void ProgramSelect(int x){
       digitalWrite(Col4, LOW);
       if (analogRead(Row1) >= 900) {Keyboard.release('d'); NumCount2 = 0;}
       else{FuncPress(0,0,0,0,0);   Keyboard.press('d'); NumCount2++;}
-      digitalWrite(Col4, HIGH);
+      digitalWrite(Col4, HIGH);3
     }
 
     
