@@ -123,13 +123,14 @@ void ProgramSelect(int x){
   if(x%ProgramNum == 0){  //Photoshop
     
     char mat[4][4] = 
-    {{' ', 'b', 'c', 'd'},
+    {{'1', '2', '3', '4'},
      {'e', 'f', 'g', 'h'},
      {'i', 'j', 'k', 'l'},
      {'m', 'n', 'o', 'p'}};
-    
+
+
     if (checkR1) {  //1st row
-      input(Col1, Row1, mat[0][0], 0, 0, 1, 0, 0);   input(Col2, Row1, mat[1][0], 0, 0, 0, 0, 0);   input(Col3, Row1, mat[2][0], 0, 0, 0, 0, 0);   input(Col4, Row1, mat[3][0], 0, 0, 0, 0, 0);}
+      input1(Col1, Row1, mat[0][0], 0, 0, 0, 0, 0);  input(Col2, Row1, mat[1][0], 0, 0, 0, 0, 0);   input(Col3, Row1, mat[2][0], 0, 0, 0, 0, 0);   input(Col4, Row1, mat[3][0], 0, 0, 0, 0, 0);}
 
     if (checkR2) {  //2nd row
       input(Col1, Row2, mat[0][1], 0, 0, 0, 0, 0);   input(Col2, Row2, mat[1][1], 0, 0, 0, 0, 0);   input(Col3, Row2, mat[2][1], 0, 0, 0, 0, 0);   input(Col4, Row2, mat[3][1], 0, 0, 0, 0, 0);}
@@ -138,7 +139,48 @@ void ProgramSelect(int x){
       input(Col1, Row3, mat[0][2], 0, 0, 0, 0, 0);   input(Col2, Row3, mat[1][2], 0, 0, 0, 0, 0);   input(Col3, Row3, mat[2][2], 0, 0, 0, 0, 0);   input(Col4, Row3, mat[3][2], 0, 0, 0, 0, 0);}
 
     if (checkR4) {  //4th row
-      input(Col1, Row4, mat[0][3], 0, 0, 0, 0, 0);   input(Col2, Row4, mat[1][3], 0, 0, 0, 0, 0);   input(Col3, Row4, mat[2][3], 0, 0, 0, 0, 0);   input(Col4, Row4, mat[3][3], 0, 0, 0, 0, 0);}
+      input2(Col1, Row4, mat[0][3], 0, 0, 0, 0, 0);  input(Col2, Row4, mat[1][3], 0, 0, 0, 0, 0);   input(Col3, Row4, mat[2][3], 0, 0, 0, 0, 0);   input(Col4, Row4, mat[3][3], 0, 0, 0, 0, 0);}
+  
+/*
+    if (checkR1) {
+      digitalWrite(Col1, LOW);
+      if (analogRead(Row1) >= 900) {Keyboard.release('1'); NumCount1 = 0;}
+      else{FuncPress(0,0,0,0,0);    Keyboard.press('1'); NumCount1++;}
+      digitalWrite(Col1, HIGH);
+    }
+    if (checkR2) {
+      digitalWrite(Col1, LOW);
+      if (analogRead(Row2) >= 900) Keyboard.release('2');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('2');}
+      digitalWrite(Col1, HIGH);
+    }
+    if (checkR3) {
+      digitalWrite(Col1, LOW);
+      if (analogRead(Row3) >= 900) Keyboard.release('3');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('3');}
+      digitalWrite(Col1, HIGH);
+    }
+    if (checkR4) {
+      digitalWrite(Col1, LOW);
+      if (analogRead(Row4) >= 900) {Keyboard.release('4'); NumCount2 = 0;}
+      else{FuncPress(0,0,0,0,0);    Keyboard.press('4'); NumCount2++;}
+      digitalWrite(Col1, HIGH);
+    }
+
+    
+    if (checkR1) {  //1st row
+      input(Col2, Row1, mat[1][0], 0, 0, 0, 0, 0);   input(Col3, Row1, mat[2][0], 0, 0, 0, 0, 0);   input(Col4, Row1, mat[3][0], 0, 0, 0, 0, 0);}
+
+    if (checkR2) {  //2nd row
+      input(Col2, Row2, mat[1][1], 0, 0, 0, 0, 0);   input(Col3, Row2, mat[2][1], 0, 0, 0, 0, 0);   input(Col4, Row2, mat[3][1], 0, 0, 0, 0, 0);}
+    
+    if (checkR3) {  //3rd row
+      input(Col2, Row3, mat[1][2], 0, 0, 0, 0, 0);   input(Col3, Row3, mat[2][2], 0, 0, 0, 0, 0);   input(Col4, Row3, mat[3][2], 0, 0, 0, 0, 0);}
+
+    if (checkR4) {  //4th row
+      input(Col2, Row4, mat[1][3], 0, 0, 0, 0, 0);   input(Col3, Row4, mat[2][3], 0, 0, 0, 0, 0);   input(Col4, Row4, mat[3][3], 0, 0, 0, 0, 0);}
+*/
+
   
   //////////encoder//////////
 
@@ -174,6 +216,37 @@ void input(int col, int row, char input, int a, int b, int c, int d, int e){
   }
 }
 
+void input1(int col, int row, char input, int a, int b, int c, int d, int e){
+  
+  if(input == ' '){
+    digitalWrite(col, LOW);
+    if (analogRead(row) >= 900)   NumCount1 = 0;
+    else {FuncPress(a,b,c,d,e);   NumCount1++;}
+    digitalWrite(col, HIGH);
+  }
+  else{
+    digitalWrite(col, LOW);
+    if (analogRead(row) >= 900){Keyboard.release(input); NumCount1 = 0;}
+    else{FuncPress(a,b,c,d,e);  Keyboard.press(input); NumCount1++;}
+    digitalWrite(col, HIGH);
+  }
+}
+
+void input2(int col, int row, char input, int a, int b, int c, int d, int e){
+  
+  if(input == ' '){
+    digitalWrite(col, LOW);
+    if (analogRead(row) >= 900)   NumCount2 = 0;
+    else {FuncPress(a,b,c,d,e);   NumCount2++;}
+    digitalWrite(col, HIGH);
+  }
+  else{
+    digitalWrite(col, LOW);
+    if (analogRead(row) >= 900) {Keyboard.release(input); NumCount2 = 0;}
+    else{FuncPress(a,b,c,d,e);   Keyboard.press(input); NumCount2++;}
+    digitalWrite(col, HIGH);
+  }
+}
 
 
 void ProgramShow(int x){
@@ -191,7 +264,30 @@ void ProgramShow(int x){
 }
 
 
+
  void Numpad(){
+    
+    char mat[4][4] = 
+    {{' ', ' ', ' ', ' '},
+     {'1', '2', '3', '0'},
+     {'4', '5', '6', 'l'},
+     {'7', '8', '9', 'p'}};
+
+    if (checkR1) {  //1st row
+      input1(Col1, Row1, mat[0][0], 0, 0, 0, 0, 0);  input(Col2, Row1, mat[1][0], 0, 0, 0, 0, 0);   input(Col3, Row1, mat[2][0], 0, 0, 0, 0, 0);   input(Col4, Row1, mat[3][0], 0, 0, 0, 0, 0);}
+
+    if (checkR2) {  //2nd row
+      input(Col1, Row2, mat[0][1], 0, 0, 0, 0, 0);   input(Col2, Row2, mat[1][1], 0, 0, 0, 0, 0);   input(Col3, Row2, mat[2][1], 0, 0, 0, 0, 0);   input(Col4, Row2, mat[3][1], 0, 0, 0, 0, 0);}
+    
+    if (checkR3) {  //3rd row
+      input(Col1, Row3, mat[0][2], 0, 0, 0, 0, 0);   input(Col2, Row3, mat[1][2], 0, 0, 0, 0, 0);   input(Col3, Row3, mat[2][2], 0, 0, 0, 0, 0);   input(Col4, Row3, mat[3][2], 0, 0, 0, 0, 0);}
+
+    if (checkR4) {  //4th row
+      input2(Col1, Row4, mat[0][3], 0, 0, 0, 0, 0);  input(Col2, Row4, mat[1][3], 0, 0, 0, 0, 0);   input(Col3, Row4, mat[2][3], 0, 0, 0, 0, 0);   input(Col4, Row4, mat[3][3], 0, 0, 0, 0, 0);}
+  
+
+  
+  /*
     if (checkR1) {
       digitalWrite(Col1, LOW);
       if (analogRead(Row1) >= 900) {Keyboard.release('1'); NumCount1 = 0;}
@@ -255,6 +351,7 @@ void ProgramShow(int x){
       else{FuncPress(0,0,0,0,0);   Keyboard.press(KEY_RETURN);}
       digitalWrite(Col4, HIGH);
     }
+    */
  }
 
 
