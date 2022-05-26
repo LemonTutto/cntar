@@ -1,32 +1,18 @@
 #include <Keyboard.h>
-#include <Arduino.h>
-#include <RotaryEncoder.h>
+#include <Encoder.h>
 
-#define Row1 PA0
-#define Row2 PA1
-#define Row3 PA2         
+#define Row1 A0
+#define Row2 A0
+#define Row3 A1
+#define Row4 A2         
 
-#define Col1 PA3
-#define Col2 PA4
-#define Col3 PA5
-#define Col4 PA6
-
-#define ENC_PIN1 PB8
-#define ENC_PIN2 PB9
-#define ENC_PIN3 PB6
-#define ENC_PIN4 PB7
-#define ENC_PIN5 PB4
-#define ENC_PIN6 PB5
-#define ENC_PIN7 PA15
-#define ENC_PIN8 PB3
-
-#define EncP1 PB12
-#define EncP2 PB13
-#define EncP3 PB14
-#define EncP4 PB15
+#define Col1 9
+#define Col2 14
+#define Col3 15
+#define Col4 16
 
 //////////keyboard declare//////////
-int checkR1, checkR2, checkR3;
+int checkR1, checkR2, checkR3, checkR4;
 unsigned int pushMillis=0;
 
 char FuncKey[] = {(char) 0x83, (char) 0x82, (char) 0x81, (char) 0x80, (char) 0x20};// cmd, opt, shift, ctrl, spacebar
@@ -37,21 +23,18 @@ int i = 0;
 
 
 //////////encoder declare//////////
-RotaryEncoder *enc1 = nullptr;
-RotaryEncoder *enc2 = nullptr;
-RotaryEncoder *enc3 = nullptr;
-RotaryEncoder *enc4 = nullptr;
-
-void chkP1(){enc1->tick();}
-void chkP2(){enc2->tick();}
-void chkP3(){enc3->tick();}
-void chkP4(){enc4->tick();}
-
-static int pos1 = 0;
-static int pos2 = 0;
-static int pos3 = 0;
-static int pos4 = 0;
-
+Encoder myEncA(3, 8);
+Encoder myEncB(2, 6);
+Encoder myEncC(0, 5);
+Encoder myEncD(1, 4);
+long EncAold  = -999;
+long EncBold  = -999;
+long EncCold  = -999;
+long EncDold  = -999;
+long EncAvar = 0;
+long EncBvar = 0;
+long EncCvar = 0;
+long EncDvar = 0;
 
 int ProgramSel = 0;
 int ProgramNum = 3;
@@ -78,38 +61,19 @@ void setup() {
   pinMode(Row1, INPUT_PULLUP);
   pinMode(Row2, INPUT_PULLUP);
   pinMode(Row3, INPUT_PULLUP);
+  pinMode(Row4, INPUT_PULLUP);
   pinMode(Col1, OUTPUT);
   pinMode(Col2, OUTPUT);
   pinMode(Col3, OUTPUT);
   pinMode(Col4, OUTPUT);
 
-
-  /////////encoder setup//////////
-  pinMode(EncP1, INPUT_PULLUP);
-  pinMode(EncP2, INPUT_PULLUP);
-  pinMode(EncP3, INPUT_PULLUP);
-  pinMode(EncP4, INPUT_PULLUP);
-
-  enc1 = new RotaryEncoder(ENC_PIN1, ENC_PIN2, RotaryEncoder::LatchMode::TWO03);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN1), chkP1, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN2), chkP1, CHANGE);
-  enc2 = new RotaryEncoder(ENC_PIN3, ENC_PIN4, RotaryEncoder::LatchMode::TWO03);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN3), chkP2, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN4), chkP2, CHANGE);
-  enc3 = new RotaryEncoder(ENC_PIN5, ENC_PIN6, RotaryEncoder::LatchMode::TWO03);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN5), chkP3, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN6), chkP3, CHANGE);
-  enc4 = new RotaryEncoder(ENC_PIN7, ENC_PIN8, RotaryEncoder::LatchMode::TWO03);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN7), chkP4, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN8), chkP4, CHANGE);
-  
   pushMillis=millis();
 }
 
 
 void loop() {
   
-  if(digitalRead(EncP1) == LOW && digitalRead(EncP4) == LOW){
+/*  if(digitalRead(EncP1) == LOW && digitalRead(EncP4) == LOW){
     if((millis()-pushMillis)>250){
       ProgramSel++;
       Keyboard.press(KEY_LEFT_GUI);
@@ -121,7 +85,7 @@ void loop() {
       delay(2000);
     }
   }
-  
+  */
   
   digitalWrite(Col1, LOW); digitalWrite(Col2, LOW); digitalWrite(Col3, LOW); digitalWrite(Col4, LOW);
   if(analogRead(Row1) <= 900) checkR1 = 2;
@@ -130,6 +94,8 @@ void loop() {
   else{if(checkR2) checkR2--;}
   if(analogRead(Row3) <= 900) checkR3 = 2;
   else{if(checkR3) checkR3--;}
+  if(analogRead(Row4) <= 900) checkR4 = 2;
+  else{if(checkR4) checkR4--;}
   digitalWrite(Col1, HIGH) ;digitalWrite(Col2, HIGH); digitalWrite(Col3, HIGH); digitalWrite(Col4, HIGH);
 
   if(NumCount1 > 10 && NumCount2 > 10){
@@ -156,176 +122,102 @@ void ProgramSelect(int x){
   if(x%ProgramNum == 0){  //Photoshop
     if (checkR1) {  //1st row
       digitalWrite(Col1, LOW);
-      if (analogRead(Row1) >= 900) {Keyboard.release('q'); NumCount1 = 0;}
-      else{FuncPress(1,1,0,0,0);    Keyboard.press('q'); NumCount1++;}
+      if (analogRead(Row1) >= 900) {Keyboard.release('a'); NumCount1 = 0;}
+      else{FuncPress(0,0,0,0,0);    Keyboard.press('a'); NumCount1++;}
       digitalWrite(Col1, HIGH);
 
       digitalWrite(Col2, LOW);
-      if (analogRead(Row1) >= 900) Keyboard.release('1');
-      else{FuncPress(1,1,0,0,0);   Keyboard.press('1');}
+      if (analogRead(Row1) >= 900) Keyboard.release('b');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('b');}
       digitalWrite(Col2, HIGH);
 
       digitalWrite(Col3, LOW);
-      if (analogRead(Row1) >= 900) Keyboard.release('i');
-      else{FuncPress(1,0,0,0,0);   Keyboard.press('i');}
+      if (analogRead(Row1) >= 900) Keyboard.release('c');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('c');}
       digitalWrite(Col3, HIGH);
 
       digitalWrite(Col4, LOW);
-      if (analogRead(Row1) >= 900) {Keyboard.release('x'); NumCount2 = 0;}
-      else{FuncPress(1,0,1,0,0);   Keyboard.press('x'); NumCount2++;}
+      if (analogRead(Row1) >= 900) {Keyboard.release('d'); NumCount2 = 0;}
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('d'); NumCount2++;}
       digitalWrite(Col4, HIGH);
     }
 
     
     if (checkR2) {  //2nd row
       digitalWrite(Col1, LOW);
-      if (analogRead(Row2) >= 900) Keyboard.release('t');
-      else{FuncPress(1,0,0,0,0);   Keyboard.press('t');}
+      if (analogRead(Row2) >= 900) Keyboard.release('e');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('e');}
       digitalWrite(Col1, HIGH);
 
       digitalWrite(Col2, LOW);
-      if (analogRead(Row2) >= 900) Keyboard.release('j');
-      else{FuncPress(1,0,0,0,0);   Keyboard.press('j');}
+      if (analogRead(Row2) >= 900) Keyboard.release('f');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('f');}
       digitalWrite(Col2, HIGH);
 
       digitalWrite(Col3, LOW);
-      if (analogRead(Row2) >= 900) Keyboard.release('d');
-      else{FuncPress(1,0,0,0,0);   Keyboard.press('d');}
+      if (analogRead(Row2) >= 900) Keyboard.release('g');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('g');}
       digitalWrite(Col3, HIGH);
 
       digitalWrite(Col4, LOW);
-      if (analogRead(Row2) >= 900) Keyboard.release('x');
-      else{FuncPress(1,1,0,0,0);   Keyboard.press('x');}
+      if (analogRead(Row2) >= 900) Keyboard.release('h');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('h');}
       digitalWrite(Col4, HIGH);
     }
     
   
     if (checkR3) {  //3rd row
       digitalWrite(Col1, LOW);
-      if (analogRead(Row3) >= 900) i = i; 
-      else{FuncPress(0,0,1,0,0);   }
+      if (analogRead(Row3) >= 900) Keyboard.release('i');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('i');}
       digitalWrite(Col1, HIGH);
 
       digitalWrite(Col2, LOW);
-      if (analogRead(Row3) >= 900) i = i; 
-      else{FuncPress(0,1,0,0,0);   }
+      if (analogRead(Row3) >= 900) Keyboard.release('j');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('j');}
       digitalWrite(Col2, HIGH);
 
       digitalWrite(Col3, LOW);
-      if (analogRead(Row3) >= 900) i = i;  
-      else{FuncPress(1,0,0,0,0);   }
+      if (analogRead(Row3) >= 900) Keyboard.release('k');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('k');}
       digitalWrite(Col3, HIGH);
 
       digitalWrite(Col4, LOW);
-      if (analogRead(Row3) >= 900) i = i;
-      else{FuncPress(0,0,0,0,1);  }
+      if (analogRead(Row3) >= 900) Keyboard.release('l');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('l');}
       digitalWrite(Col4, HIGH);
     }
 
+
+  
+    if (checkR4) {  //3rd row
+      digitalWrite(Col1, LOW);
+      if (analogRead(Row4) >= 900) Keyboard.release('m');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('m');}
+      digitalWrite(Col1, HIGH);
+
+      digitalWrite(Col2, LOW);
+      if (analogRead(Row4) >= 900) Keyboard.release('n');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('n');}
+      digitalWrite(Col2, HIGH);
+
+      digitalWrite(Col3, LOW);
+      if (analogRead(Row4) >= 900) Keyboard.release('o');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('o');}
+      digitalWrite(Col3, HIGH);
+
+      digitalWrite(Col4, LOW);
+      if (analogRead(Row4) >= 900) Keyboard.release('p');
+      else{FuncPress(0,0,0,0,0);   Keyboard.press('p');}
+      digitalWrite(Col4, HIGH);
+    }
   
   //////////encoder//////////
-    enc1->tick();
-    enc2->tick();
-    enc3->tick();
-    enc4->tick();
 
-    int newPos1 = enc1->getPosition()/5;  //Tool Selector & Layer Selector
-    if(pos1 != newPos1){
-      if(digitalRead(EncP1) == HIGH){
-        if((int)(enc1->getDirection()) == true){
-          if(ToolNum > 0){
-            ToolNum--; Keyboard.write(ToolVal[ToolNum]);
-          }
-        }
-        else{
-          if(ToolNum < sizeof(ToolVal)){
-            ToolNum++; Keyboard.write(ToolVal[ToolNum]);
-          }
-        }
-      }
-      else{
-        if((int)(enc1->getDirection()) == true){
-          FuncPress(0,0,1,0,0); Keyboard.write(ToolVal[ToolNum]);
-        }
-        else{
-          FuncPress(0,1,0,0,0); Keyboard.write(']');
-        }
-      }
-      pos1 = newPos1;
-    }
-  
-    int newPos2 = enc2->getPosition()/5;  //History 
-    if(pos2 != newPos2){
-      if(digitalRead(EncP2) == HIGH){
-        if((int)(enc2->getDirection()) == true){
-          FuncPress(1,0,0,0,0); Keyboard.press('z');
-        }
-        else{
-          FuncPress(1,0,1,0,0); Keyboard.press('z');
-        }
-      }
-      /*else{
-        if((int)(enc2->getDirection()) == true){
-          FuncPress(0,1,0,0,0); Keyboard.press('[');
-        }
-        else{
-          FuncPress(0,1,0,0,0); Keyboard.press(']');
-        }
-      }*/
-      Keyboard.release('z');
-      Keyboard.release('[');
-      Keyboard.release(']');
-      pos2 = newPos2;
-    }
-  
-    int newPos3 = enc3->getPosition()/2; //Brush size & Opacity
-    if(pos3 != newPos3){
-      if(digitalRead(EncP3) == HIGH){
-        if((int)(enc3->getDirection()) == true){
-          Keyboard.press('[');
-        }
-        else{
-          Keyboard.press(']');
-        }
-      }
-      else{
-        if((int)(enc3->getDirection()) == true){
-          if(OpVal>1){OpVal--; Keyboard.print(OpVal*5);}
-        }
-        else{
-          if(OpVal<20){OpVal++; Keyboard.print(OpVal*5);}
-        }
-      }
-      Keyboard.release('[');
-      Keyboard.release(']');
-      pos3 = newPos3;
-    }
-  
-    int newPos4 = enc4->getPosition()/3;  //Zoom
-    if(pos4 != newPos4){
-      if(digitalRead(EncP4) == HIGH){
-        if((int)(enc4->getDirection()) == true){
-          FuncPress(1,0,0,0,0); Keyboard.press('-');
-        }
-        else{
-          FuncPress(1,0,0,0,0); Keyboard.press('+');
-        }
-      }
-      else{
-        if((int)(enc4->getDirection()) == true){
-          Keyboard.press('{');
-        }
-        else{
-          Keyboard.press('}');
-        }
-      }
-      Keyboard.release('-');
-      Keyboard.release('+');
-      Keyboard.release('{');
-      Keyboard.release('}');
-            
-      pos4 = newPos4;
-    }
+
+
+
+
   }
 
   if(x%ProgramNum == 1){
