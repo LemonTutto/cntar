@@ -139,7 +139,7 @@ void ProgramSelect(int x){
       digitalWrite(Col4, LOW);
       if (analogRead(Row1) >= 900) {Keyboard.release('d'); NumCount2 = 0;}
       else{FuncPress(0,0,0,0,0);   Keyboard.press('d'); NumCount2++;}
-      digitalWrite(Col4, HIGH);3
+      digitalWrite(Col4, HIGH);
     }
 
     
