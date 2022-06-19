@@ -24,7 +24,7 @@ int i = 0;
 
 
 //////////encoder declare//////////
-Encoder myEncA(3, 8);
+Encoder myEncA(8, 3);
 Encoder myEncB(2, 6);
 Encoder myEncC(0, 5);
 Encoder myEncD(1, 4);
@@ -114,9 +114,9 @@ void ProgramSelect(int x){
     
     char mat[4][4] = 
     {{' ', ' ', ' ', ' '},
-     {' ', ' ', ' ', ' '},
-     {' ', ' ', ' ', ' '},
-     {' ', ' ', ' ', ' '}};
+     {'a', 'd', 'g', 'j'},
+     {'b', 'e', 'h', 'k'},
+     {'c', 'f', 'i', 'l'}};
 
      int bmat[4][4] =                   // cmd, opt, shift, ctrl, spacebar
     {{0b00000, 0b00000, 0b00000, 0b00000},
@@ -140,11 +140,11 @@ void ProgramSelect(int x){
 
   long EncAnew = myEncA.read();
   long EncBnew = myEncB.read();
-  long EncCnew = myEncC.read();
-  long EncDnew = myEncD.read();
+  long EncCnew = myEncC.read() / 4;
+  long EncDnew = myEncD.read() / 4;
 //////////1st encoder//////////Tool Selector
    if (EncAnew/2 != EncAold/2) {          
-      if (digitalRead(1) == HIGH) {      //if you rotate encoder
+      if (EncP1 == 0) {      //if you rotate encoder
         if(EncAnew/2 > EncAold/2){
           if(ToolNum > 0){
             ToolNum--;
@@ -165,7 +165,6 @@ void ProgramSelect(int x){
     Keyboard.releaseAll();
     EncAold = EncAnew;
     EncAvar = EncAnew/2;
-    delay(40);
    }
 
 //////////2nd encoder//////////opacity
@@ -189,7 +188,7 @@ void ProgramSelect(int x){
 
 //////////3rd encoder//////////brush size & hardness
   if (EncCnew/2 != EncCold/2) {
-    if(digitalRead(A3) == LOW){
+    if(EncP3 == 1){
       Keyboard.press(KEY_LEFT_SHIFT);
     }
     if(EncCnew/2 > EncCold/2){
@@ -229,7 +228,6 @@ void ProgramSelect(int x){
     Keyboard.releaseAll();
     EncDold = EncDnew;
     EncDvar = EncDnew/2;
-    delay(40);
    }
     
   }
